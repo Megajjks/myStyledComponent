@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Styled Components</title>
+  <style>
+    body {
+      min-height: 100vh;
+      font-family: canada-type-gibson, sans-serif;
+      font-weight: 300;
+      font-size: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      overflow: hidden;
+      background-color: #eff8e2;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="container"></div>
+  <script>
+    
+    function component(strings, ...dynamicValues) {
+      return function (props) {
+        let newContent = strings.slice()
+        console.log(newContent)
+        dynamicValues.forEach((value, index) => {
+          newContent[index] += props[value]
+        })
+        return newContent.join('')
+      }
+    }
+
+    function drawnTag( tag, styles, component) {
+      return `
+        <${tag} style="${styles}">
+          ${component}
+        </${tag}>
+
+      `
+    }
+
+
+    // Crea un objeto con su tagname y style a aplicar cuando se llame esa tag
+    function generateStyledObjectMap(tags){
+      let styled = {}
+      tags.forEach((tag)=>{
+        styled[tag] =(styles)=>{
+          return (component) => drawnTag(tag, styles, component)
+        }
+      })
+      return styled
+    }
+
+  const tags = ['body', 'h1', 'h2', 'div', 'img', 'p']
+
+   const styled = generateStyledObjectMap(tags)
+    console.log(styled);
+
+    //Definiendo los estilos a lo styled component
+    const TitleStyled = styled.h1`
+      text-shadow: 3px 3px 0 var(--color-secondary), 6px 6px 0 var(--color-tertiary),
+        9px 9px var(--color-quaternary), 12px 12px 0 var(--color-quinary);
+      font-family: sans-serif;
+      font-weight: 800;
+      text-transform: uppercase;
+      font-size: calc(2rem + 5vw);
+      text-align: center;
+      margin: 0;
+      color: #f6aca2
+    `
+
+    //Definiendo props
+    const props = {
+      message: 'No Te Rindas',
+    }
+
+    //Llamando a los tag templates
+    const Title = component`<marquee>${'message'}</marquee>`(props)
+    const Body = component`${'message'}`(props)
+
+    // funcion para renderizar 
+    function render(component, container) {
+      container.innerHTML = component
+    }
+
+    render(TitleStyled(Title), window.container)
+
+  </script>
+</body>
+
+</html>
